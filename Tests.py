@@ -1,4 +1,8 @@
-import Parser
+from typing import List
+from Parser import *
+from PlayerPageParser import *
+from PlayerRankingHistoryParser import *
+from Classes.Ranking import Ranking
 import unittest
 john_isner = {
     'name': 'john isner',
@@ -36,7 +40,6 @@ john_isner = {
         }
     },
 }
-
 
 david_goffin = {
     'name': 'david goffin',
@@ -77,23 +80,28 @@ david_goffin = {
 
 
 class PlayerParseTest(unittest.TestCase):
-
     def test_playerNameParse(self):
-        self.assertEqual(Parser.parse_player_name(
-            'Roger Federer'), 'roger-federer')
-        self.assertEqual(Parser.parse_player_name(
-            'roger federer'), 'roger-federer')
-        self.assertEqual(Parser.parse_player_name(
-            'roger Federer'), 'roger-federer')
-        self.assertEqual(Parser.parse_player_name(
-            'Roger federer'), 'roger-federer')
-        self.assertEqual(Parser.parse_player_name(
-            '   Roger federer   '), 'roger-federer')
-        self.assertEqual(Parser.parse_player_name(
-            '   Roger    federer   '), 'roger-federer')
+        self.assertEqual(parse_player_name('Roger Federer'), 'roger-federer')
+        self.assertEqual(parse_player_name('roger federer'), 'roger-federer')
+        self.assertEqual(parse_player_name('roger Federer'), 'roger-federer')
+        self.assertEqual(parse_player_name('Roger federer'), 'roger-federer')
+        self.assertEqual(
+            parse_player_name('   Roger federer   '), 'roger-federer')
+        self.assertEqual(
+            parse_player_name('   Roger    federer   '), 'roger-federer')
 
     def test_topTen(self):
-        self.assertTrue(len(Parser.get_top_10()) == 10)
+        self.assertTrue(len(get_top_10()) == 10)
+
+    def test_playerRank(self):
+        self.assertIsInstance(get_player_rank('Rafael Nadal'), int)
+        self.assertIsInstance(
+            get_player_rank('Rafael Nadal', singles=False), int)
+        self.assertIsInstance(get_player_rank('roger federer'), int)
+
+    def test_playerRankingHistory(self):
+        self.assertIsInstance(
+            get_player_ranking_history('roger federer'), List)
 
     def test_playerValuesTest(self):
         tennis_types = ['data-singles', 'data-doubles']
@@ -101,28 +109,47 @@ class PlayerParseTest(unittest.TestCase):
 
         for tennis_type, player in zip(tennis_types, players):
             # current year
-            self.assertEqual(Parser.parse_player_page(player['name']).cy_stats[tennis_type][
-                'rank_move'], player['current_year_stats'][tennis_type]['rank_move'])
-            self.assertEqual(Parser.parse_player_page(player['name']).cy_stats[tennis_type][
-                'rank'], player['current_year_stats'][tennis_type]['rank'])
-            self.assertEqual(Parser.parse_player_page(player['name']).cy_stats[tennis_type][
-                'w-l'], player['current_year_stats'][tennis_type]['w-l'])
-            self.assertEqual(Parser.parse_player_page(player['name']).cy_stats[tennis_type][
-                'titles'], player['current_year_stats'][tennis_type]['titles'])
-            self.assertEqual(Parser.parse_player_page(player['name']).cy_stats[tennis_type][
-                'prize_money'], player['current_year_stats'][tennis_type]['prize_money'])
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).cy_stats[tennis_type]['rank_move'],
+                type(player['current_year_stats'][tennis_type]['rank_move']))
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).cy_stats[tennis_type]['rank'],
+                type(player['current_year_stats'][tennis_type]['rank']))
+            self.assertIsInstance(
+                parse_player_page(player['name']).cy_stats[tennis_type]['w-l'],
+                type(player['current_year_stats'][tennis_type]['w-l']))
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).cy_stats[tennis_type]['titles'],
+                type(player['current_year_stats'][tennis_type]['titles']))
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).cy_stats[tennis_type]['prize_money'],
+                type(player['current_year_stats'][tennis_type]['prize_money']))
 
             # career
-            self.assertEqual(Parser.parse_player_page(player['name']).career_stats[tennis_type][
-                'rank'], player['career_stats'][tennis_type]['rank'])
-            self.assertEqual(Parser.parse_player_page(player['name']).career_stats[tennis_type][
-                'date_highest'], player['career_stats'][tennis_type]['date_highest'])
-            self.assertEqual(Parser.parse_player_page(player['name']).career_stats[tennis_type][
-                'w-l'], player['career_stats'][tennis_type]['w-l'])
-            self.assertEqual(Parser.parse_player_page(player['name']).career_stats[tennis_type][
-                'titles'], player['career_stats'][tennis_type]['titles'])
-            self.assertEqual(Parser.parse_player_page(player['name']).career_stats[tennis_type][
-                'prize_money'], player['career_stats'][tennis_type]['prize_money'])
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).career_stats[tennis_type]['rank'],
+                type(player['career_stats'][tennis_type]['rank']))
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).career_stats[tennis_type]['date_highest'],
+                type(player['career_stats'][tennis_type]['date_highest']))
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).career_stats[tennis_type]['w-l'],
+                type(player['career_stats'][tennis_type]['w-l']))
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).career_stats[tennis_type]['titles'],
+                type(player['career_stats'][tennis_type]['titles']))
+            self.assertIsInstance(
+                parse_player_page(
+                    player['name']).career_stats[tennis_type]['prize_money'],
+                type(player['career_stats'][tennis_type]['prize_money']))
 
 
 if __name__ == "__main__":

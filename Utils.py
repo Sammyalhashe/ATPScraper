@@ -1,10 +1,13 @@
 from requests import get
+from requests.models import Response
+from functools import lru_cache
 from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup as bs
+from json import loads
 
 
-def get_site_content(url):
+def get_site_content(url: str) -> str:
     """get_site_content
     returns unparsed html from the url specified
 
@@ -19,10 +22,21 @@ def get_site_content(url):
     except RequestException as e:
         logError(e)
         raise RequestException("Something went wrong with the request")
-        return None
 
 
-def parse_with_soup(resp):
+def get_api_call_content(url: str) -> str:
+    try:
+        with closing(get(url, stream=True)) as res:
+            if is_good_nonHTML_resp(res):
+                return loads(res.content.decode('utf-8'))
+            else:
+                return None
+    except RequestException as e:
+        logError(e)
+        raise RequestException("Something went wrong with the request")
+
+
+def parse_with_soup(resp: str) -> bs:
     """parse_with_soup
     Uses BeautifulSoup to parse the html, returns the parsed version
     :param resp: response content from get_site_content
@@ -35,7 +49,8 @@ def parse_with_soup(resp):
         return None
 
 
-def get_parsed_site_content(url):
+@lru_cache()
+def get_parsed_site_content(url: str) -> bs:
     """get_parsed_site_content
     Takes a url and returns the BeautifulSoup html parsed version
 
@@ -46,7 +61,7 @@ def get_parsed_site_content(url):
     return parsed
 
 
-def is_good_resp(resp):
+def is_good_resp(resp: Response) -> bool:
     """is_good_resp
     Checks if the url response is valid
 
@@ -55,6 +70,11 @@ def is_good_resp(resp):
     content_type = resp.headers['Content-Type'].lower()
     return (resp.status_code == 200 and content_type is not None
             and content_type.find('html') > -1)
+
+
+def is_good_nonHTML_resp(resp: Response) -> bool:
+    content_type = resp.headers['Content-Type'].lower()
+    return (resp.status_code == 200 and content_type is not None)
 
 
 def logError(e):
