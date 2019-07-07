@@ -1,2 +1,4 @@
 requests
 BeautifulSoup4
+Flask
+flask-restful

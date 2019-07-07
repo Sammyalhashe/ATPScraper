@@ -1,5 +1,4 @@
-#!/home/yousefalhashemi/Desktop/atpScraper/venv/bin/python3
-
+#!/Users/sammyalhashemi/Documents/ATPScraper/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
