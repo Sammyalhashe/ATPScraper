@@ -1,1 +1,1 @@
-/Users/sammyalhashemi/Documents/ATPScraper/ATPScraper/venv/bin/python -m scraper.Tests
+~/Documents/ATPScraper/ATPScraper/venv/bin/python -m scraper.Tests

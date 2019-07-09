@@ -1,9 +1,17 @@
 class Player:
-    def __init__(self, name, current_year_stats, career_stats, bio_url=None):
+    def __init__(self,
+                 name,
+                 current_year_stats=None,
+                 career_stats=None,
+                 ranking_history=None,
+                 bio_url=None,
+                 fd=None):
         self.name = name
         self.bio = bio_url
         self.cy_stats = current_year_stats
         self.career_stats = career_stats
+        self.ranking_history = ranking_history
+        self.fundamentals = fd
 
     def __str__(self):
         player_string = "\n-------------------------\n"

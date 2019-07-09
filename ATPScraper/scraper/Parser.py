@@ -1,3 +1,4 @@
+from time import time, localtime
 from .constants import *
 from requests.exceptions import RequestException
 from .Utils import get_site_content, logError, parse_with_soup, get_parsed_site_content, get_api_call_content
@@ -5,12 +6,14 @@ from .Classes.Player import Player
 from typing import Dict, List
 from functools import lru_cache
 from bs4.element import Tag
-
+from cachetools import cached
+from .CacheUtils import clear_caches, check_timer, player_link_cache
 """
 HOME RANKING CONTENT BELOW
 """
 
-def entry_point(singles:bool=True):
+
+def entry_point(singles: bool = True):
     """entry_point
     Entry page for the rankings
 
@@ -41,6 +44,7 @@ def get_top_10() -> List[str]:
             break
         p += 1
     return players
+
 
 def parse_player_name(name):
     """parse_player_name
@@ -91,8 +95,8 @@ def search_for_player(player_name: str) -> str:
         return None
 
 
-
-@lru_cache()
+# @lru_cache()
+@cached(player_link_cache)
 def get_player_bio(player_name: str, singles: bool = True) -> str:
     """get_player_bio
     returns the url fragment for a player's ranking page
@@ -100,9 +104,15 @@ def get_player_bio(player_name: str, singles: bool = True) -> str:
     :param player_name: name of the player
     :param singles: singles/doubles?
     """
+    # curr_time = localtime(time())
+    # curr_mon, curr_day = curr_time.tm_mon, curr_time.tm_mday
+    # if not start_date[0] - curr_mon or not start_date[1] - curr_day:
+    #     player_link_cache.clear()
+    check_timer()
     dict_with_bio_frag = search_for_player(player_name)
     if not dict_with_bio_frag:
-        raise ValueError("Player does not exist")
+        # raise ValueError("Player does not exist")
+        return ""
 
     return dict_with_bio_frag['Value']
     """

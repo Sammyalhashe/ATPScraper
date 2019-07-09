@@ -1,12 +1,14 @@
+from time import time, localtime
 from .constants import *
 from requests.exceptions import RequestException
 from .Utils import get_site_content, logError, parse_with_soup, get_parsed_site_content, get_api_call_content
-from .Parser import get_player_bio
+from .Parser import get_player_bio, parse_player_name
 from .Classes.Player import Player
 from typing import Dict, List
 from functools import lru_cache
+from cachetools import LRUCache, cached
+from .CacheUtils import clear_caches, check_timer, player_bio_cache
 from bs4.element import Tag
-
 """
 PLAYER OVERVIEW PAGE PARSER CONTENT BELOW
 """
@@ -117,8 +119,56 @@ def parse_summary_table_row(row: Tag,
                             for x in wl_div[singles_attr].strip().split('-')
                         ]
 
+def get_fundamental_stats_for_player(row: Tag, player_details: Dict, row_id: int) -> None:
+    tds = row.find_all('td')
+    base_label_val = "table-{}".format("big-" if not row_id else "")
+    for td in tds:
+        wrapper = td.find('div', {'class': 'wrap'})
+        tableBigLabel = wrapper.find('div', {'class': base_label_val + "label"}).text.strip()
+        tableBigValueDiv = wrapper.find('div', {'class': base_label_val + "value"})
+        tableBigValue = tableBigValueDiv.text.strip()
+        # find the player's age
+        if tableBigLabel == 'Age':
+            tbv = tableBigValue.split('\n\r\n')
+            player_details['age']['age'] = int(tbv[0].strip())
+            player_details['age']['birthdate'] = tbv[1].strip().replace("(", "").replace(")", "")
+        # find when the player turned pro
+        if tableBigLabel == 'Turned Pro':
+            player_details['turned_pro'] = int(tableBigValue)
+        # find the player's weight
+        if tableBigLabel == 'Weight':
+            weightWrapper_lbs = tableBigValueDiv.find('span', {'class': 'table-weight-lbs-wrapper'})
+            weightWrapper_kg = tableBigValueDiv.find('span', {'class': 'table-weight-kg-wrapper'})
 
-@lru_cache()
+            player_details['weight']['lbs'] = int(weightWrapper_lbs.find('span', {'class': 'table-weight-lbs'}).text.strip())
+            player_details['weight']['kg'] = int(weightWrapper_kg.text.replace("(", "").replace(")", "").strip()[:-2])
+        # find the player's height
+        if tableBigLabel == 'Height':
+            heightWrapper_ft = tableBigValueDiv.find('span', {'class': 'table-height-ft-wrapper'})
+            heightWrapper_cm = tableBigValueDiv.find('span', {'class': 'table-height-cm-wrapper'})
+
+            player_details['height']['ft'] = heightWrapper_ft.find('span', {'class': 'table-height-ft'}).text.replace("\"", "").strip()
+            player_details['height']['cm'] = int(heightWrapper_cm.text.replace("(", "").replace(")", "").strip()[:-2])
+        # find the player's birthplace
+        if tableBigLabel == 'Birthplace':
+            player_details['birthplace'] = tableBigValue
+        # find the player's residence
+        if tableBigLabel == 'Residence':
+            player_details['residence'] = tableBigValue
+        # find the player's technique
+        if tableBigLabel == 'Plays':
+            tbv = tableBigValue.split(', ')
+            player_details['plays']['hand'] = tbv[0]
+            player_details['plays']['backhand'] = tbv[1]
+        # find the player's coach
+        if tableBigLabel == 'Coach':
+            player_details['coach'] = tableBigValue
+
+
+
+
+
+# @lru_cache()
 def build_player(player_content, player_name, player_bio) -> Player:
     """build_player
     https://docs.python.org/3/library/functools.html#functools.lru_cache
@@ -146,9 +196,29 @@ def build_player(player_content, player_name, player_bio) -> Player:
         else:
             parse_summary_table_row(row, player_details, True)
 
+    fd = {
+        'age': {},
+        'turned_pro': 0,
+        'weight': {},
+        'height': {},
+        'birthplace': "",
+        'residence': "",
+        'coach': '',
+        'plays': {}
+    }
+
+    player_fundamental_table = player_content.select('.player-profile-hero-table>.inner-wrap>table>tr')
+    row_id = 0
+    for row in player_fundamental_table:
+        get_fundamental_stats_for_player(row, fd, row_id)
+        row_id += 1
+        
+    player_details['fd'] = fd
+
     return Player(**player_details)
 
 
+@cached(player_bio_cache)
 def parse_player_page(player_name: str, singles: bool = True) -> Player:
     """parse_player_page
 
@@ -158,6 +228,11 @@ def parse_player_page(player_name: str, singles: bool = True) -> Player:
     :type singles: bool
     :rtype: Dict
     """
+    check_timer()
+    # curr_time = localtime(time())
+    # curr_mon, curr_day = curr_time.tm_mon, curr_time.tm_mday
+    # if not start_date[0] - curr_mon or not start_date[1] - curr_day:
+    #     player_bio_cache.clear()
     bio_fragment = get_player_bio(player_name, singles)
     if bio_fragment is None:
         logError("Player doesn't exist")
@@ -177,19 +252,27 @@ def get_player_rank(player_name: str, singles: bool = True) -> int:
     :type singles: bool
     :rtype: int
     """
-    try:
-        bio_fragment = get_player_bio(player_name, singles)
-    except ValueError as e:
-        logError(e)
-        return -1
-    if bio_fragment is None:
-        logError("Player doesn't exist")
-        return -1
+    # try:
+    #     bio_fragment = get_player_bio(player_name, singles)
+    # except ValueError as e:
+    #     logError(e)
+    #     return -1
+    # if bio_fragment is None:
+    #     logError("Player doesn't exist")
+    #     return -1
+    # else:
+    #     PLAYER_FULL_URL = PLAYERS_BASE_URL + bio_fragment
+    # player_content = get_parsed_site_content(PLAYER_FULL_URL)
+    # player = build_player(player_content, player_name, PLAYER_FULL_URL)
+    parsed_name = parse_player_name(player_name)
+    if parsed_name in list(map(lambda x: x[0], player_bio_cache.__iter__())):
+        return player_bio_cache[(parsed_name, )].cy_stats['data-singles'][
+            'rank'] if singles else player_bio_cache[(
+                parsed_name, )].cy_stats['data-doubles']['rank']
     else:
-        PLAYER_FULL_URL = PLAYERS_BASE_URL + bio_fragment
-    player_content = get_parsed_site_content(PLAYER_FULL_URL)
-    player = build_player(player_content, player_name, PLAYER_FULL_URL)
-    return player.cy_stats['data-singles'][
-        'rank'] if singles else player.cy_stats['data-doubles']['rank']
+        player = parse_player_page(parsed_name)
+        return player.cy_stats['data-singles'][
+            'rank'] if singles else player.cy_stats['data-doubles']['rank']
+
 
 # print(get_player_rank('john isner'))

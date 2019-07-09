@@ -4,11 +4,13 @@ try:
     from .PlayerPageParser import *
     from .PlayerRankingHistoryParser import *
     from .Classes.Ranking import Ranking
+    from .CacheUtils import timer
 except ImportError:
     from Parser import *
     from PlayerPageParser import *
     from PlayerRankingHistoryParser import *
     from Classes.Ranking import Ranking
+    from CacheUtils import timer
 import unittest
 john_isner = {
     'name': 'john isner',
@@ -101,6 +103,7 @@ class PlayerParseTest(unittest.TestCase):
 
     def test_playerRank(self):
         self.assertIsInstance(get_player_rank('Rafael Nadal'), int)
+        self.assertIsInstance(get_player_rank('Rafael Nadal'), int)
         self.assertIsInstance(
             get_player_rank('Rafael Nadal', singles=False), int)
         self.assertIsInstance(get_player_rank('roger federer'), int)
@@ -156,6 +159,10 @@ class PlayerParseTest(unittest.TestCase):
                 parse_player_page(
                     player['name']).career_stats[tennis_type]['prize_money'],
                 type(player['career_stats'][tennis_type]['prize_money']))
+
+    @classmethod
+    def tearDownClass(cls):
+        timer.cancel()
 
 
 if __name__ == "__main__":

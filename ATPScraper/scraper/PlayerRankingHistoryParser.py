@@ -1,12 +1,18 @@
+from time import time, localtime
+# from .constants import start_date
 from typing import List
 from .Classes.Ranking import Ranking
 from .constants import PLAYERS_RANKING_HISTORY, BASE
 from .Utils import get_parsed_site_content
-from .Parser import get_player_bio, logError
+from .Parser import get_player_bio, logError, parse_player_name
+from .PlayerPageParser import player_bio_cache
 from functools import lru_cache
+from cachetools import cached
+from .CacheUtils import clear_caches, check_timer, ranking_history_cache
 
 
-@lru_cache()
+# @lru_cache()
+@cached(ranking_history_cache)
 def get_player_ranking_history(player_name: str) -> List[Ranking]:
     """get_player_ranking_history
 
@@ -14,6 +20,18 @@ def get_player_ranking_history(player_name: str) -> List[Ranking]:
     :type player_name: str
     :rtype: List[Ranking]
     """
+    # curr_time = localtime(time())
+    # curr_mon, curr_day = curr_time.tm_mon, curr_time.tm_mday
+    # if not start_date[0] - curr_mon or not start_date[1] - curr_day:
+    #     ranking_history_cache.clear()
+    check_timer()
+    parsed_name = parse_player_name(player_name)
+    player = None
+    if parsed_name in list(map(lambda x: x[0], player_bio_cache.__iter__())):
+        player = player_bio_cache[(parsed_name, )]
+        old_rank_hist = player.ranking_history
+        if old_rank_hist is not None:
+            return old_rank_hist
     try:
         player_bio = get_player_bio(player_name)
     except ValueError as e:
@@ -36,4 +54,8 @@ def get_player_ranking_history(player_name: str) -> List[Ranking]:
             elif i == 2:
                 ranking['doubles'] = text
         ranking_history.append(Ranking(**ranking))
+
+    # update the cache
+    if player is not None:
+        player_bio_cache.__setitem__((parsed_name, ), ranking_history)
     return ranking_history
