@@ -90,6 +90,7 @@ david_goffin = {
 class PlayerParseTest(unittest.TestCase):
     def test_playerNameParse(self):
         self.assertEqual(parse_player_name('Roger Federer'), 'roger-federer')
+        self.assertEqual(parse_player_name('RogerFederer'), 'roger-federer')
         self.assertEqual(parse_player_name('roger federer'), 'roger-federer')
         self.assertEqual(parse_player_name('roger Federer'), 'roger-federer')
         self.assertEqual(parse_player_name('Roger federer'), 'roger-federer')

@@ -6,9 +6,7 @@ services:
     volumes:
       - ./ATPScraper:/usr/src/app
     ports:
-      - "5000:80"
-    networks:
-      - backend
+      - "5000:5000"
   test-app:
     build: ./test-app
     volumes:
@@ -16,12 +14,7 @@ services:
       - "/app/node_modules"
     ports:
       - "3001:3000"
-    networks:
-      - backend
     environment:
       - NODE_ENV=development
     depends_on:
       - scraper-api
-
-networks:
-  backend:

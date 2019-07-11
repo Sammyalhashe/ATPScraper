@@ -3,8 +3,8 @@ from time import time, localtime
 from typing import List
 from .Classes.Ranking import Ranking
 from .constants import PLAYERS_RANKING_HISTORY, BASE
-from .Utils import get_parsed_site_content
-from .Parser import get_player_bio, logError, parse_player_name
+from .Utils import get_parsed_site_content, logError
+from .Parser import get_player_bio, parse_player_name
 from .PlayerPageParser import player_bio_cache
 from functools import lru_cache
 from cachetools import cached
@@ -36,6 +36,7 @@ def get_player_ranking_history(player_name: str) -> List[Ranking]:
         player_bio = get_player_bio(player_name)
     except ValueError as e:
         logError(e)
+        # since you're cacheing, you have to figure out how to handle this case if it returns the error response
         return []
     # get_player_bio returns the overview url -> need to replace this
     url = BASE + player_bio.replace('/overview', '') + PLAYERS_RANKING_HISTORY

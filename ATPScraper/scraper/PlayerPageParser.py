@@ -162,7 +162,9 @@ def get_fundamental_stats_for_player(row: Tag, player_details: Dict, row_id: int
             player_details['plays']['backhand'] = tbv[1]
         # find the player's coach
         if tableBigLabel == 'Coach':
-            player_details['coach'] = tableBigValue
+            coaches = list(map(lambda x: x.strip(), tableBigValue.split(',')))
+            print(coaches)
+            player_details['coach'] = coaches or [tableBigValue]
 
 
 
@@ -264,7 +266,8 @@ def get_player_rank(player_name: str, singles: bool = True) -> int:
     #     PLAYER_FULL_URL = PLAYERS_BASE_URL + bio_fragment
     # player_content = get_parsed_site_content(PLAYER_FULL_URL)
     # player = build_player(player_content, player_name, PLAYER_FULL_URL)
-    parsed_name = parse_player_name(player_name)
+    # parsed_name = parse_player_name(player_name)
+    parsed_name = player_name
     if parsed_name in list(map(lambda x: x[0], player_bio_cache.__iter__())):
         return player_bio_cache[(parsed_name, )].cy_stats['data-singles'][
             'rank'] if singles else player_bio_cache[(
@@ -274,5 +277,3 @@ def get_player_rank(player_name: str, singles: bool = True) -> int:
         return player.cy_stats['data-singles'][
             'rank'] if singles else player.cy_stats['data-doubles']['rank']
 
-
-# print(get_player_rank('john isner'))

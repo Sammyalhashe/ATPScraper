@@ -1,12 +1,11 @@
 import React from "react";
-import Topten from "./components/Topten";
+import Topten from "./components/Top10/Topten";
 import "./App.css";
 
 function App() {
   return (
     <div className="App">
         <header className="App-header">
-
             <Topten />
         </header>
     </div>

@@ -54,7 +54,11 @@ def parse_player_name(name):
 
     :param name: name to be parsed
     """
-    return "".join(space_regex.sub('-', name.strip()).lower().split())
+    name = name.strip()
+    # split by capital letters
+    name = capital_regex.sub(' ', name).strip()
+    # split by spaces
+    return "".join(space_regex.sub('-', name).lower().split())
 
 
 def parse_player_search_response(res: Dict) -> Dict:
@@ -81,7 +85,7 @@ def search_for_player(player_name: str) -> str:
     """
     try:
         content = get_api_call_content(
-            BASE + PLAYER_SEARCH_URL + parse_player_name(player_name))
+            BASE + PLAYER_SEARCH_URL + player_name)
     except RequestException as e:
         logError(e)
         return None

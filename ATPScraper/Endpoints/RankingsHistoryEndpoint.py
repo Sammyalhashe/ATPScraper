@@ -3,6 +3,7 @@ from flask_restful import Resource
 
 # scraper dependencies
 from scraper.PlayerRankingHistoryParser import get_player_ranking_history
+from scraper.Parser import parse_player_name
 
 # Utils
 def parse_ranking(ranking):
@@ -15,6 +16,7 @@ def parse_ranking(ranking):
 # Endpoints
 class RankingHistory(Resource):
     def get(self, name):
+        name = parse_player_name(name)
         ranking_hist = get_player_ranking_history(name)
         ranking_hist_parsed = list(map(lambda x: parse_ranking(x), ranking_hist))
         return {'player': {
