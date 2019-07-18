@@ -3,14 +3,15 @@ try:
     from .Parser import *
     from .PlayerPageParser import *
     from .PlayerRankingHistoryParser import *
+    from .PlayerWinLossPageParser import get_player_win_loss_stats
+    from .PlayerTitlesPageParser import parse_player_titles_page
     from .Classes.Ranking import Ranking
-    from .CacheUtils import timer
 except ImportError:
     from Parser import *
     from PlayerPageParser import *
     from PlayerRankingHistoryParser import *
+    from PlayerWinLossPageParser import get_player_win_loss_stats
     from Classes.Ranking import Ranking
-    from CacheUtils import timer
 import unittest
 john_isner = {
     'name': 'john isner',
@@ -113,6 +114,12 @@ class PlayerParseTest(unittest.TestCase):
         self.assertIsInstance(
             get_player_ranking_history('roger federer'), List)
 
+    def test_playerWinLoss(self):
+        self.assertIsInstance(get_player_win_loss_stats(parse_player_name('RogerFederer'))()['tour']['match_record']['overall']['ytd_wl'], List)
+
+    def test_playerTitles(self):
+        self.assertIsInstance(parse_player_titles_page(parse_player_name('Novak Djokovic'))['singles']['items'][0]['titles']['tournaments'], List)
+
     def test_playerValuesTest(self):
         tennis_types = ['data-singles', 'data-doubles']
         players = [john_isner, david_goffin]
@@ -163,6 +170,10 @@ class PlayerParseTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        try:
+            from .CacheUtils import timer
+        except ImportError:
+            from CacheUtils import timer
         timer.cancel()
 
 

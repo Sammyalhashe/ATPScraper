@@ -48,16 +48,33 @@ def parse_with_soup(resp: str) -> bs:
         logError("Response is not valid")
         return None
 
+def parse_with_soup_html5lib(resp: str) -> bs:
+    """parse_with_soup
+    Uses BeautifulSoup to parse the html, returns the parsed version
+    with html5lib parser
+    :param resp: response content from get_site_content
+    """
+    if resp is not None:
+        parsed = bs(resp, 'html5lib')
+        return parsed
+    else:
+        logError("Response is not valid")
+        return None
+
+
 
 @lru_cache()
-def get_parsed_site_content(url: str) -> bs:
+def get_parsed_site_content(url: str, default: bool = True) -> bs:
     """get_parsed_site_content
     Takes a url and returns the BeautifulSoup html parsed version
 
     :param url: url to parse
     """
     unparsed = get_site_content(url)
-    parsed = parse_with_soup(unparsed)
+    if default:
+        parsed = parse_with_soup(unparsed)
+    else:
+        parsed = parse_with_soup_html5lib(unparsed)
     return parsed
 
 

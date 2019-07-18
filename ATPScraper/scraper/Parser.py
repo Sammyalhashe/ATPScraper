@@ -1,8 +1,7 @@
 from time import time, localtime
 from .constants import *
 from requests.exceptions import RequestException
-from .Utils import get_site_content, logError, parse_with_soup, get_parsed_site_content, get_api_call_content
-from .Classes.Player import Player
+from .Utils import logError, get_parsed_site_content, get_api_call_content
 from typing import Dict, List
 from functools import lru_cache
 from bs4.element import Tag
@@ -84,8 +83,7 @@ def search_for_player(player_name: str) -> str:
     :rtype: str
     """
     try:
-        content = get_api_call_content(
-            BASE + PLAYER_SEARCH_URL + player_name)
+        content = get_api_call_content(BASE + PLAYER_SEARCH_URL + player_name)
     except RequestException as e:
         logError(e)
         return None

@@ -28,6 +28,8 @@ class PlayerOverview(Resource):
     def get(self, name):
         """get
 
+        /api/player_overview/{name}
+
         :param name: name of the player
         """
         name = parse_player_name(name)
@@ -44,6 +46,8 @@ class PlayerRanking(Resource):
     @use_kwargs(args)
     def get(self, name, singles=True):
         """get
+
+        /api/player_ranking/{name}
 
         :param name: name of the player
         :param singles: singles or doubles?

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraper-api
+spec:
+  selector:
+    matchLabels:
+      app: scraper-api
+  replicas: 1
+  template:
+    metadata:
+      labels: # metadata we can query
+        app: scraper-api
+        tier: backend
+    spec:
+      containers:
+        - name: scraper-api
+          image: "gcr.io/atpscraper/scraper-api:v2"
+          ports:
+            - name: api
+              containerPort: 5000

@@ -24,7 +24,7 @@ def get_player_ranking_history(player_name: str) -> List[Ranking]:
     # curr_mon, curr_day = curr_time.tm_mon, curr_time.tm_mday
     # if not start_date[0] - curr_mon or not start_date[1] - curr_day:
     #     ranking_history_cache.clear()
-    check_timer()
+    # check_timer()
     parsed_name = parse_player_name(player_name)
     player = None
     if parsed_name in list(map(lambda x: x[0], player_bio_cache.__iter__())):

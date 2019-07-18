@@ -6,7 +6,7 @@ from .Parser import get_player_bio, parse_player_name
 from .Classes.Player import Player
 from typing import Dict, List
 from functools import lru_cache
-from cachetools import LRUCache, cached
+from cachetools import LRUCache, cached, TTLCache
 from .CacheUtils import clear_caches, check_timer, player_bio_cache
 from bs4.element import Tag
 """
@@ -163,7 +163,6 @@ def get_fundamental_stats_for_player(row: Tag, player_details: Dict, row_id: int
         # find the player's coach
         if tableBigLabel == 'Coach':
             coaches = list(map(lambda x: x.strip(), tableBigValue.split(',')))
-            print(coaches)
             player_details['coach'] = coaches or [tableBigValue]
 
 
@@ -214,7 +213,7 @@ def build_player(player_content, player_name, player_bio) -> Player:
     for row in player_fundamental_table:
         get_fundamental_stats_for_player(row, fd, row_id)
         row_id += 1
-        
+
     player_details['fd'] = fd
 
     return Player(**player_details)
@@ -230,7 +229,7 @@ def parse_player_page(player_name: str, singles: bool = True) -> Player:
     :type singles: bool
     :rtype: Dict
     """
-    check_timer()
+    # check_timer()
     # curr_time = localtime(time())
     # curr_mon, curr_day = curr_time.tm_mon, curr_time.tm_mday
     # if not start_date[0] - curr_mon or not start_date[1] - curr_day:
