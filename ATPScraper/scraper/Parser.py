@@ -110,7 +110,7 @@ def get_player_bio(player_name: str, singles: bool = True) -> str:
     # curr_mon, curr_day = curr_time.tm_mon, curr_time.tm_mday
     # if not start_date[0] - curr_mon or not start_date[1] - curr_day:
     #     player_link_cache.clear()
-    check_timer()
+    # check_timer()
     dict_with_bio_frag = search_for_player(player_name)
     if not dict_with_bio_frag:
         # raise ValueError("Player does not exist")

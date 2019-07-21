@@ -10,9 +10,12 @@ from scraper.PlayerTitlesPageParser import parse_player_titles_page
 
 # Endpoints
 class PlayerTitlesFinals(Resource):
-    args = {'singles': fields.Bool(missing=True)}
+    args = {
+        'singles': fields.Bool(missing=True),
+        'years': fields.Str(missing="*")
+    }
 
     @use_kwargs(args)
-    def get(self, name, singles):
+    def get(self, name, singles, years):
         name = parse_player_name(name)
-        return parse_player_titles_page(name, singles)
+        return parse_player_titles_page(name, singles, years)

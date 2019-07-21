@@ -1,5 +1,8 @@
+# other dependencies
+import os
+
 # Flask dependencies
-from flask import Flask
+from flask import Flask, render_template
 from flask_restful import Resource, Api
 
 # Endpoints
@@ -11,8 +14,22 @@ from Endpoints.TournamentOverviewEndpoints import *
 from Endpoints.PlayerTitlesEndpoints import *
 
 # api init
-app = Flask(__name__)
+if os.environ.get('DEV', 'development') == 'production':
+    app = Flask(
+        __name__, static_folder='build/static', template_folder='build')
+else:
+    app = Flask(__name__)
 api = Api(app)
+
+
+# main page
+@app.route("/")
+def hello():
+    if os.environ.get('DEV', 'development') == 'production':
+        return render_template('index.html')
+    else:
+        return 'dev-home'
+
 
 # api resources
 api.add_resource(GetTopTen, '/api/top_10')
@@ -24,4 +41,6 @@ api.add_resource(TournamentOverview, '/api/tournament_overview/<string:name>')
 api.add_resource(PlayerTitlesFinals, '/api/<string:name>/titles')
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    print(port)
+    app.run(host="0.0.0.0", port=port, debug=False)

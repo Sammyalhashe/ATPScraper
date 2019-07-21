@@ -1,0 +1,35 @@
+.top-10 {
+	background: inherit;
+	color: white;
+	/* pointer-events: none; */
+	border: none;
+	overflow: scroll;
+	overflow-x: scroll;
+}
+
+.title {
+	font-size: 50px;
+	border-bottom: white solid 7px;
+	margin-bottom: 20px;
+	margin-top: 15px;
+}
+
+.holder {
+	margin-bottom: 10px;
+}
+
+input:focus {
+	outline: 0;
+}
+input {
+	border: 0;
+	font-size: 23px;
+	background: inherit;
+	color: white;
+	/* border-bottom: solid white 5px; */
+}
+
+span.inputHolder {
+	display: block;
+	transform: translateX(50px);
+}
