@@ -11,7 +11,7 @@ PLAYERS_RANKING_HISTORY = "/rankings-history"
 PLAYERS_WIN_LOSS_STATS = "/fedex-atp-win-loss"
 PLAYER_WIN_LOSS_URLS = BASE + "/en/content/ajax/player-match-record-page?matchRecordType={0}&playerId={1}"
 PLAYER_TITLES_OVERVIEW_URL = BASE + "{}" + "titles-and-finals"
-
+PLAYER_RANKINGS_BREAKDOWN_URL = BASE + "{}" + "rankings-breakdown"
 start_date = datetime(2019, 7, 7, 23, 8, 45, 474911)
 space_regex = re.compile(r'( )+', re.IGNORECASE)
 capital_regex = re.compile(r'(?=[A-Z])')

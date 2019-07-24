@@ -10,11 +10,13 @@ player_link_cache = LRUCache(maxsize=128)
 player_win_loss_cache = TTLCache(maxsize=128, ttl=86400)
 player_titles_finals_cache = TTLCache(maxsize=128, ttl=86400)
 tournament_overview_cache = TTLCache(maxsize=128, ttl=86400)
+parse_player_ranking_breakdown_cache = TTLCache(maxsize=128, ttl=86400)
 
 caches = [player_bio_cache, player_link_cache, ranking_history_cache]
 
 y = start_date.replace(
-    day=start_date.day, hour=1, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    day=start_date.day, hour=1, minute=0, second=0,
+    microsecond=0) + timedelta(days=1)
 delta_t = y - start_date
 
 secs = delta_t.total_seconds()
@@ -23,7 +25,6 @@ secs = delta_t.total_seconds()
 def clear_caches():
     for cache in caches:
         cache.clear()
-
 
 
 class RepeatableTimer(object):
@@ -37,7 +38,9 @@ class RepeatableTimer(object):
         t = Timer(self.interval, self.function, self._args, self._kwargs)
         t.start()
 
+
 timer = None
+
 
 def check_timer():
     global timer

@@ -4,12 +4,14 @@ try:
     from .PlayerPageParser import *
     from .PlayerRankingHistoryParser import *
     from .PlayerWinLossPageParser import get_player_win_loss_stats
+    from .PlayerRankingsBreakdownParser import *
     from .PlayerTitlesPageParser import parse_player_titles_page
     from .Classes.Ranking import Ranking
 except ImportError:
     from Parser import *
     from PlayerPageParser import *
     from PlayerRankingHistoryParser import *
+    from PlayerRankingsBreakdownParser import *
     from PlayerWinLossPageParser import get_player_win_loss_stats
     from Classes.Ranking import Ranking
 import unittest
@@ -95,10 +97,10 @@ class PlayerParseTest(unittest.TestCase):
         self.assertEqual(parse_player_name('roger federer'), 'roger-federer')
         self.assertEqual(parse_player_name('roger Federer'), 'roger-federer')
         self.assertEqual(parse_player_name('Roger federer'), 'roger-federer')
-        self.assertEqual(
-            parse_player_name('   Roger federer   '), 'roger-federer')
-        self.assertEqual(
-            parse_player_name('   Roger    federer   '), 'roger-federer')
+        self.assertEqual(parse_player_name('   Roger federer   '),
+                         'roger-federer')
+        self.assertEqual(parse_player_name('   Roger    federer   '),
+                         'roger-federer')
 
     def test_topTen(self):
         self.assertTrue(len(get_top_10()) == 10)
@@ -106,19 +108,30 @@ class PlayerParseTest(unittest.TestCase):
     def test_playerRank(self):
         self.assertIsInstance(get_player_rank('Rafael Nadal'), int)
         self.assertIsInstance(get_player_rank('Rafael Nadal'), int)
-        self.assertIsInstance(
-            get_player_rank('Rafael Nadal', singles=False), int)
+        self.assertIsInstance(get_player_rank('Rafael Nadal', singles=False),
+                              int)
         self.assertIsInstance(get_player_rank('roger federer'), int)
 
     def test_playerRankingHistory(self):
-        self.assertIsInstance(
-            get_player_ranking_history('roger federer'), List)
+        self.assertIsInstance(get_player_ranking_history('roger federer'),
+                              List)
+
+    def test_PlayerRankingBreakdown(self):
+        test = parse_player_ranking_breakdown('Roger Federer')
+        self.assertIsInstance(test['items'], List)
+        self.assertIsInstance(test['items'][0]['name'], str)
+        self.assertIsInstance(test['items'][0]['items'], List)
+        self.assertIsInstance(test['items'][0]['items'][0]['points'], int)
 
     def test_playerWinLoss(self):
-        self.assertIsInstance(get_player_win_loss_stats(parse_player_name('RogerFederer'))()['tour']['match_record']['overall']['ytd_wl'], List)
+        self.assertIsInstance(
+            get_player_win_loss_stats(parse_player_name('RogerFederer'))()
+            ['tour']['match_record']['overall']['ytd_wl'], List)
 
     def test_playerTitles(self):
-        self.assertIsInstance(parse_player_titles_page(parse_player_name('Novak Djokovic'))['singles']['items'][0]['titles']['tournaments'], List)
+        self.assertIsInstance(
+            parse_player_titles_page(parse_player_name('Novak Djokovic'))
+            ['singles']['items'][0]['titles']['tournaments'], List)
 
     def test_playerValuesTest(self):
         tennis_types = ['data-singles', 'data-doubles']
@@ -174,7 +187,7 @@ class PlayerParseTest(unittest.TestCase):
             from .CacheUtils import timer
         except ImportError:
             from CacheUtils import timer
-        timer.cancel()
+        # timer.cancel()
 
 
 if __name__ == "__main__":
