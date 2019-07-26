@@ -15,7 +15,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
-    "proxy_test": "http://scraper:5000/",
+    "proxy": "http://scraper:5000/",
     "eslintConfig": {
         "extends": "react-app"
     },

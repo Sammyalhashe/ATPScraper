@@ -30,6 +30,13 @@ function App() {
           url_extra="?tour="
           player_extra="*"
         />
+        <PlayerOverview
+            title="Titles"
+            url="/api/"
+            player="Roger Federer"
+            url_extra="/titles?years="
+            player_extra="*"
+        />
       </header>
     </div>
   );
