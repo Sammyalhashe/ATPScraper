@@ -134,7 +134,7 @@ def get_fundamental_stats_for_player(row: Tag, player_details: Dict, row_id: int
             player_details['age']['birthdate'] = tbv[1].strip().replace("(", "").replace(")", "")
         # find when the player turned pro
         if tableBigLabel == 'Turned Pro':
-            player_details['turned_pro'] = int(tableBigValue)
+            player_details['turned_pro'] = -1 if not tableBigValue else int(tableBigValue)
         # find the player's weight
         if tableBigLabel == 'Weight':
             weightWrapper_lbs = tableBigValueDiv.find('span', {'class': 'table-weight-lbs-wrapper'})

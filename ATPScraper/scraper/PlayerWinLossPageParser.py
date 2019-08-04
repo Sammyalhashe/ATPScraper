@@ -93,6 +93,7 @@ def get_player_win_loss_stats_for_tour(player_name: str,
     parsed_name = parse_player_name(player_name)
     stats_for_tour = None
     player_bio = get_player_bio(parsed_name)
+    print(player_bio)
     player_id = player_bio.split('/')[-2]
     # try:
     #     if player_link_cache.__contains__(parsed_name):

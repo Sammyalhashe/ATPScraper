@@ -60,7 +60,7 @@ def parse_player_name(name):
     return "".join(space_regex.sub('-', name).lower().split())
 
 
-def parse_player_search_response(res: Dict) -> Dict:
+def parse_player_search_response(res: Dict, player_name) -> Dict:
     """parse_player_search_response
 
     :param res: json.loaded response from player search
@@ -69,10 +69,17 @@ def parse_player_search_response(res: Dict) -> Dict:
     """
     if not res['items']:
         raise ValueError("Player does not exist")
-    parsed_response = {}
-    parsed_response['Key'] = res['items'][0]['Key']
-    parsed_response['Value'] = res['items'][0]['Value']
-    return parsed_response
+    for player in res['items']:
+        print(player)
+        print(parse_player_name(player['Key']), parse_player_name(player_name))
+        if parse_player_name(player['Key']) == parse_player_name(player_name):
+            parsed_response = {}
+            parsed_response['Key'] = player['Key']
+            parsed_response['Value'] = player['Value']
+            print(parsed_response)
+            return parsed_response
+
+    raise ValueError("Player does not exist")
 
 
 def search_for_player(player_name: str) -> str:
@@ -91,7 +98,7 @@ def search_for_player(player_name: str) -> str:
         logError("Player does not exist")
         return None
     try:
-        return parse_player_search_response(content)
+        return parse_player_search_response(content, player_name)
     except ValueError as e:
         logError(e)
         return None
