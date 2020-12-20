@@ -23,3 +23,14 @@ tournament_names_alts = {
     'tennis-masters-cup/605': 'nitto-atp-finals/605',
     'toronto/421': 'montreal/421'
 }
+
+headers = {
+    "Host": "www.atptour.com",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:83.0) Gecko/20100101 Firefox/83.0",
+    "Accept": "image/webp,*/*",
+    "Accept-Language": "en-CA,en-US;q=0.7,en;q=0.3",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Referer": "https://www.atptour.com/en/-/ajax/playersearch/PlayerUrlSearch?searchTerm=rogerfederer",
+    "Cookie": "__cfduid=d0cc39a9db4608c3f1a2406b53d3e6e921606058338; atpModalContainer=%2Fen%2Fplayers%2Froger-federer%2Ff324%2Foverview; __cf_bm=9b85edff842e0f0913b2d30e07196b65714a9734-1606063387-1800-ASqCuRAh05On6EplJjj6903WoCadH0BQ0JHccKj3Tab/WkM4YfjO8I5+/sfXRU3qq2iqDIUkdcUmJb/lbZ8u6fE="
+}

@@ -7,6 +7,11 @@ from functools import lru_cache
 from bs4.element import Tag
 from cachetools import cached
 from .CacheUtils import clear_caches, check_timer, player_link_cache
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 """
 HOME RANKING CONTENT BELOW
 """
@@ -94,6 +99,7 @@ def search_for_player(player_name: str) -> str:
     except RequestException as e:
         logError(e)
         return None
+    print(content, flush=True)
     if not content:
         logError("Player does not exist")
         return None
@@ -119,6 +125,8 @@ def get_player_bio(player_name: str, singles: bool = True) -> str:
     #     player_link_cache.clear()
     # check_timer()
     dict_with_bio_frag = search_for_player(player_name)
+    print("dict_with_bio_frag")
+    print(dict_with_bio_frag, flush=True)
     if not dict_with_bio_frag:
         # raise ValueError("Player does not exist")
         return ""

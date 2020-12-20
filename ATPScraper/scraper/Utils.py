@@ -5,7 +5,10 @@ from requests.exceptions import RequestException
 from contextlib import closing
 from bs4 import BeautifulSoup as bs
 from json import loads
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def get_site_content(url: str) -> str:
     """get_site_content
@@ -26,8 +29,11 @@ def get_site_content(url: str) -> str:
 
 def get_api_call_content(url: str) -> str:
     try:
+        print("url to follow", flush=True)
+        print(url, flush=True)
         with closing(get(url, stream=True)) as res:
             if is_good_nonHTML_resp(res):
+                logError(res.content.decode("utf-8"))
                 return loads(res.content.decode('utf-8'))
             else:
                 return None
@@ -62,6 +68,8 @@ def parse_with_soup_html5lib(resp: str) -> bs:
         return None
 
 
+import logging
+logger = logging.getLogger(__name__)
 
 @lru_cache()
 def get_parsed_site_content(url: str, default: bool = True) -> bs:
@@ -70,6 +78,7 @@ def get_parsed_site_content(url: str, default: bool = True) -> bs:
 
     :param url: url to parse
     """
+    logger.debug("THIS IS A URL " + url)
     unparsed = get_site_content(url)
     if default:
         parsed = parse_with_soup(unparsed)
@@ -91,6 +100,9 @@ def is_good_resp(resp: Response) -> bool:
 
 def is_good_nonHTML_resp(resp: Response) -> bool:
     content_type = resp.headers['Content-Type'].lower()
+    print(content_type, flush=True)
+    print("status code to follow", flush=True)
+    print(resp.status_code, flush=True)
     return (resp.status_code == 200 and content_type is not None)
 
 
@@ -101,4 +113,4 @@ def logError(e):
 
     :param e: Error Message
     """
-    print(e)
+    print(e, flush=True)
