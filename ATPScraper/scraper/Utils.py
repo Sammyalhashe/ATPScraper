@@ -10,6 +10,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
 def get_site_content(url: str) -> str:
     """get_site_content
     returns unparsed html from the url specified
