@@ -115,3 +115,6 @@ def logError(e):
     :param e: Error Message
     """
     print(e, flush=True)
+
+def stripContent(s):
+    return s.replace('\r', '').replace('\n', '').strip()

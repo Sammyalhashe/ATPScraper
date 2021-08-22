@@ -1,7 +1,8 @@
 from time import time, localtime
 from .constants import *
 from requests.exceptions import RequestException
-from .Utils import logError, get_parsed_site_content, get_api_call_content
+from .Utils import logError, get_parsed_site_content, get_api_call_content, \
+        stripContent
 from typing import Dict, List
 from functools import lru_cache
 from bs4.element import Tag
@@ -42,8 +43,11 @@ def get_top_10() -> List[str]:
         return []
     p = 0
     players = []
-    for player in html.select('.player-cell>a'):
-        players.append(player.text)
+    for player in html.select('.player-cell-wrapper>a'):
+        pt = stripContent(player.text)
+        if (pt == "" or pt == None):
+            continue
+        players.append(pt)
         if p == 9:
             break
         p += 1
