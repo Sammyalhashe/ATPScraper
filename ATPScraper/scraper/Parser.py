@@ -105,7 +105,7 @@ def search_for_player(player_name: str) -> str:
         return None
     print(content, flush=True)
     if not content:
-        logError("Player does not exist")
+        logError("PLAYER CONTENT RETURNED NONE")
         return None
     try:
         return parse_player_search_response(content, player_name)

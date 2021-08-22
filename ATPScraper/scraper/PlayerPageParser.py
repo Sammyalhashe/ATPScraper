@@ -35,7 +35,7 @@ def parse_summary_table_row(row: Tag,
     tds = row.find_all('td')
     for td in tds:
         if td.has_attr('class'):
-            if td['class'][0] == 'overview-year':
+            if td['class'] and td['class'][0] == 'overview-year':
                 player_details[row_id]['year'] = td.find('div').text.strip()
         if td.has_attr('colspan'):
             divs = td.find_all('div')
